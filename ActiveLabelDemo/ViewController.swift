@@ -23,6 +23,8 @@ class ViewController: UIViewController {
         label.enabledTypes.append(customType)
         label.enabledTypes.append(customType2)
         label.enabledTypes.append(customType3)
+        let id = "1234"
+        label.enabledTypes.append(.range(NSRange(location: 5, length: 4), id: id))
 
         label.urlMaximumLength = 31
 
@@ -38,10 +40,12 @@ class ViewController: UIViewController {
             label.mentionColor = UIColor(red: 238.0/255, green: 85.0/255, blue: 96.0/255, alpha: 1)
             label.URLColor = UIColor(red: 85.0/255, green: 238.0/255, blue: 151.0/255, alpha: 1)
             label.URLSelectedColor = UIColor(red: 82.0/255, green: 190.0/255, blue: 41.0/255, alpha: 1)
+            label.rangeColor[id] = UIColor.purple
 
             label.handleMentionTap { self.alert("Mention", message: $0) }
             label.handleHashtagTap { self.alert("Hashtag", message: $0) }
             label.handleURLTap { self.alert("URL", message: $0.absoluteString) }
+            label.handleRangeTap { self.alert("Range", message: $0) }
 
             //Custom types
 
@@ -49,6 +53,9 @@ class ViewController: UIViewController {
             label.customSelectedColor[customType] = UIColor.green
             label.customColor[customType2] = UIColor.magenta
             label.customSelectedColor[customType2] = UIColor.green
+
+            //Range
+            label.rangeSelectedColor[id] = UIColor.orange
             
             label.configureLinkAttribute = { (type, attributes, isSelected) in
                 var atts = attributes

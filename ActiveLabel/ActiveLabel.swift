@@ -51,6 +51,12 @@ typealias ElementTuple = (range: NSRange, element: ActiveElement, type: ActiveTy
     open var customSelectedColor: [ActiveType : UIColor] = [:] {
         didSet { updateTextStorage(parseText: false) }
     }
+    open var rangeColor: [String: UIColor] = [:] {
+        didSet { updateTextStorage(parseText: false) }
+    }
+    open var rangeSelectedColor: [String: UIColor] = [:] {
+        didSet { updateTextStorage(parseText: false) }
+    }
     @IBInspectable public var lineSpacing: CGFloat = 0 {
         didSet { updateTextStorage(parseText: false) }
     }
@@ -86,6 +92,10 @@ typealias ElementTuple = (range: NSRange, element: ActiveElement, type: ActiveTy
     open func handleCustomTap(for type: ActiveType, handler: @escaping (String) -> ()) {
         customTapHandlers[type] = handler
     }
+
+    open func handleRangeTap(_ handler: @escaping (String) -> ()) {
+        rangeTapHandler = handler
+    }
 	
     open func removeHandle(for type: ActiveType) {
         switch type {
@@ -97,6 +107,8 @@ typealias ElementTuple = (range: NSRange, element: ActiveElement, type: ActiveTy
             urlTapHandler = nil
         case .custom:
             customTapHandlers[type] = nil
+        case .range:
+            rangeTapHandler = nil
         }
     }
 
@@ -213,6 +225,7 @@ typealias ElementTuple = (range: NSRange, element: ActiveElement, type: ActiveTy
             case .hashtag(let hashtag): didTapHashtag(hashtag)
             case .url(let originalURL, _): didTapStringURL(originalURL)
             case .custom(let element): didTap(element, for: selectedElement.type)
+            case .range(let id): rangeTapHandler?(id)
             }
             
             let when = DispatchTime.now() + Double(Int64(0.25 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)
@@ -239,7 +252,8 @@ typealias ElementTuple = (range: NSRange, element: ActiveElement, type: ActiveTy
     internal var hashtagTapHandler: ((String) -> ())?
     internal var urlTapHandler: ((URL) -> ())?
     internal var customTapHandlers: [ActiveType : ((String) -> ())] = [:]
-    
+    internal var rangeTapHandler: ((String) -> ())?
+
     fileprivate var mentionFilterPredicate: ((String) -> Bool)?
     fileprivate var hashtagFilterPredicate: ((String) -> Bool)?
 
@@ -319,6 +333,7 @@ typealias ElementTuple = (range: NSRange, element: ActiveElement, type: ActiveTy
             case .hashtag: attributes[NSAttributedStringKey.foregroundColor] = hashtagColor
             case .url: attributes[NSAttributedStringKey.foregroundColor] = URLColor
             case .custom: attributes[NSAttributedStringKey.foregroundColor] = customColor[type] ?? defaultCustomColor
+            case .range(_, let id): attributes[NSAttributedStringKey.foregroundColor] = rangeColor[id] ?? defaultCustomColor
             }
             
             if let highlightFont = hightlightFont {
@@ -401,6 +416,8 @@ typealias ElementTuple = (range: NSRange, element: ActiveElement, type: ActiveTy
             case .custom:
                 let possibleSelectedColor = customSelectedColor[selectedElement.type] ?? customColor[selectedElement.type]
                 selectedColor = possibleSelectedColor ?? defaultCustomColor
+            case .range(_, let id):
+                selectedColor = rangeSelectedColor[id] ?? rangeColor[id] ?? defaultCustomColor
             }
             attributes[NSAttributedStringKey.foregroundColor] = selectedColor
         } else {
@@ -410,6 +427,8 @@ typealias ElementTuple = (range: NSRange, element: ActiveElement, type: ActiveTy
             case .hashtag: unselectedColor = hashtagColor
             case .url: unselectedColor = URLColor
             case .custom: unselectedColor = customColor[selectedElement.type] ?? defaultCustomColor
+            case .range(_, let id):
+                unselectedColor = rangeColor[id] ?? defaultCustomColor
             }
             attributes[NSAttributedStringKey.foregroundColor] = unselectedColor
         }

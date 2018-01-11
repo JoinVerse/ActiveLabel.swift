@@ -20,13 +20,18 @@ struct ActiveBuilder {
             return createElements(from: text, for: type, range: range, filterPredicate: filterPredicate)
         case .custom:
             return createElements(from: text, for: type, range: range, minLength: 1, filterPredicate: filterPredicate)
+        case let .range(range, id):
+            return [(range: range, element: .range(id), type: type)]
         }
     }
 
     static func createURLElements(from text: String, range: NSRange, maximumLenght: Int?) -> ([ElementTuple], String) {
         let type = ActiveType.url
         var text = text
-        let matches = RegexParser.getElements(from: text, with: type.pattern, range: range)
+
+        guard let pattern = type.pattern else { return ([], text) }
+
+        let matches = RegexParser.getElements(from: text, with: pattern, range: range)
         let nsstring = text as NSString
         var elements: [ElementTuple] = []
 
@@ -34,7 +39,7 @@ struct ActiveBuilder {
             let word = nsstring.substring(with: match.range)
                 .trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
 
-            guard let maxLenght = maximumLenght, word.characters.count > maxLenght else {
+            guard let maxLenght = maximumLenght, word.count > maxLenght else {
                 let range = maximumLenght == nil ? match.range : (text as NSString).range(of: word)
                 let element = ActiveElement.create(with: type, text: word)
                 elements.append((range, element, type))
@@ -56,8 +61,9 @@ struct ActiveBuilder {
                                                 range: NSRange,
                                                 minLength: Int = 2,
                                                 filterPredicate: ActiveFilterPredicate?) -> [ElementTuple] {
+        guard let pattern = type.pattern else { return [] }
 
-        let matches = RegexParser.getElements(from: text, with: type.pattern, range: range)
+        let matches = RegexParser.getElements(from: text, with: pattern, range: range)
         let nsstring = text as NSString
         var elements: [ElementTuple] = []
 
@@ -76,7 +82,9 @@ struct ActiveBuilder {
                                                                   for type: ActiveType,
                                                                       range: NSRange,
                                                                       filterPredicate: ActiveFilterPredicate?) -> [ElementTuple] {
-        let matches = RegexParser.getElements(from: text, with: type.pattern, range: range)
+        guard let pattern = type.pattern else { return [] }
+
+        let matches = RegexParser.getElements(from: text, with: pattern, range: range)
         let nsstring = text as NSString
         var elements: [ElementTuple] = []
 
