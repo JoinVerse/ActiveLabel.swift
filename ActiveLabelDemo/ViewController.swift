@@ -34,40 +34,23 @@ class ViewController: UIViewController {
                 "Let's trim a long link: \nhttps://twitter.com/twicket_app/status/649678392372121601"
             label.numberOfLines = 0
             label.lineSpacing = 4
-            
+            label.font = UIFont.systemFont(ofSize: 20)
             label.textColor = UIColor(red: 102.0/255, green: 117.0/255, blue: 127.0/255, alpha: 1)
-            label.hashtagColor = UIColor(red: 85.0/255, green: 172.0/255, blue: 238.0/255, alpha: 1)
-            label.mentionColor = UIColor(red: 238.0/255, green: 85.0/255, blue: 96.0/255, alpha: 1)
-            label.URLColor = UIColor(red: 85.0/255, green: 238.0/255, blue: 151.0/255, alpha: 1)
-            label.URLSelectedColor = UIColor(red: 82.0/255, green: 190.0/255, blue: 41.0/255, alpha: 1)
-            label.rangeColor[id] = UIColor.purple
+            label.hashtagAttributes = [.foregroundColor: UIColor(red: 85.0/255, green: 172.0/255, blue: 238.0/255, alpha: 1)]
+            label.mentionAttributes = [.foregroundColor: UIColor(red: 238.0/255, green: 85.0/255, blue: 96.0/255, alpha: 1)]
+            label.URLAttributes = [.foregroundColor: UIColor(red: 85.0/255, green: 238.0/255, blue: 151.0/255, alpha: 1)]
+            label.URLAttributes = [.foregroundColor: UIColor(red: 82.0/255, green: 190.0/255, blue: 41.0/255, alpha: 1)]
+            label.customAttributes[customType] = [.foregroundColor: UIColor.purple]
+            label.customSelectedAttributes[customType] = [.foregroundColor: UIColor.green]
+            label.customAttributes[customType2] = [.foregroundColor: UIColor.magenta]
+            label.customSelectedAttributes[customType2] = [.foregroundColor: UIColor.green]
+            label.rangeAttributes[id] = [.font: UIFont.boldSystemFont(ofSize: 20), .foregroundColor: UIColor.purple]
+            label.rangeSelectedAttributes[id] = [.font: UIFont.boldSystemFont(ofSize: 20), .foregroundColor: UIColor.orange]
 
             label.handleMentionTap { self.alert("Mention", message: $0) }
             label.handleHashtagTap { self.alert("Hashtag", message: $0) }
             label.handleURLTap { self.alert("URL", message: $0.absoluteString) }
             label.handleRangeTap { self.alert("Range", message: $0) }
-
-            //Custom types
-
-            label.customColor[customType] = UIColor.purple
-            label.customSelectedColor[customType] = UIColor.green
-            label.customColor[customType2] = UIColor.magenta
-            label.customSelectedColor[customType2] = UIColor.green
-
-            //Range
-            label.rangeSelectedColor[id] = UIColor.orange
-            
-            label.configureLinkAttribute = { (type, attributes, isSelected) in
-                var atts = attributes
-                switch type {
-                case customType3:
-                    atts[NSAttributedStringKey.font] = isSelected ? UIFont.boldSystemFont(ofSize: 16) : UIFont.boldSystemFont(ofSize: 14)
-                default: ()
-                }
-                
-                return atts
-            }
-
             label.handleCustomTap(for: customType) { self.alert("Custom type", message: $0) }
             label.handleCustomTap(for: customType2) { self.alert("Custom type", message: $0) }
             label.handleCustomTap(for: customType3) { self.alert("Custom type", message: $0) }
