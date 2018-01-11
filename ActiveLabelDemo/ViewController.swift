@@ -34,7 +34,6 @@ class ViewController: UIViewController {
                 "Let's trim a long link: \nhttps://twitter.com/twicket_app/status/649678392372121601"
             label.numberOfLines = 0
             label.lineSpacing = 4
-            label.font = UIFont.systemFont(ofSize: 20)
             label.textColor = UIColor(red: 102.0/255, green: 117.0/255, blue: 127.0/255, alpha: 1)
             label.hashtagAttributes = [.foregroundColor: UIColor(red: 85.0/255, green: 172.0/255, blue: 238.0/255, alpha: 1)]
             label.mentionAttributes = [.foregroundColor: UIColor(red: 238.0/255, green: 85.0/255, blue: 96.0/255, alpha: 1)]

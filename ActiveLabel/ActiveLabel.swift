@@ -213,8 +213,7 @@ typealias ElementTuple = (range: NSRange, element: ActiveElement, type: ActiveTy
             case .range(let id): rangeTapHandler?(id)
             }
             
-            let when = DispatchTime.now() + Double(Int64(0.25 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)
-            DispatchQueue.main.asyncAfter(deadline: when) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
                 self.updateAttributesWhenSelected(false)
                 self.selectedElement = nil
             }
@@ -301,13 +300,19 @@ typealias ElementTuple = (range: NSRange, element: ActiveElement, type: ActiveTy
 
     /// add link attribute
     private func attributes(for type: ActiveType, isSelected: Bool) -> [NSAttributedStringKey: Any]? {
+        var attributes: [NSAttributedStringKey: Any]?
         switch type {
-        case .mention: return isSelected ? mentionSelectedAttributes : mentionAttributes
-        case .hashtag: return isSelected ? hashtagSelectedAttributes : hashtagAttributes
-        case .url: return isSelected ? URLSelectedAttributes : URLAttributes
-        case .custom: return isSelected ? customSelectedAttributes[type] : customAttributes[type]
-        case .range(_, let id): return isSelected ? rangeSelectedAttributes[id] : rangeAttributes[id]
+        case .mention: attributes = isSelected ? mentionSelectedAttributes : mentionAttributes
+        case .hashtag: attributes = isSelected ? hashtagSelectedAttributes : hashtagAttributes
+        case .url: attributes = isSelected ? URLSelectedAttributes : URLAttributes
+        case .custom: attributes = isSelected ? customSelectedAttributes[type] : customAttributes[type]
+        case .range(_, let id): attributes = isSelected ? rangeSelectedAttributes[id] : rangeAttributes[id]
         }
+
+        let attributesFont = attributes?[.font]
+        attributes?[.font] = attributesFont ?? font
+
+        return attributes
     }
 
     fileprivate func addLinkAttribute(_ mutAttrString: NSMutableAttributedString) {
