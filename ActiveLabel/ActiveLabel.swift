@@ -279,7 +279,7 @@ typealias ElementTuple = (range: NSRange, element: ActiveElement, type: ActiveTy
         addLinkAttribute(mutAttrString)
         textStorage.setAttributedString(mutAttrString)
         _customizing = true
-        text = mutAttrString.string
+        self.attributedText = mutAttrString
         _customizing = false
         setNeedsDisplay()
     }
