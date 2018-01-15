@@ -210,7 +210,7 @@ typealias ElementTuple = (range: NSRange, element: ActiveElement, type: ActiveTy
             case .hashtag(let hashtag): didTapHashtag(hashtag)
             case .url(let originalURL, _): didTapStringURL(originalURL)
             case .custom(let element): didTap(element, for: selectedElement.type)
-            case .range(let id): rangeTapHandler?(id)
+            case .range(let id): didTapRange(id, for: selectedElement.type)
             }
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
@@ -318,7 +318,8 @@ typealias ElementTuple = (range: NSRange, element: ActiveElement, type: ActiveTy
     fileprivate func addLinkAttribute(_ mutAttrString: NSMutableAttributedString) {
         for (type, elements) in activeElements {
             for element in elements {
-                mutAttrString.setAttributes(attributes(for: type, isSelected: false), range: element.range)
+                guard let attributes = attributes(for: type, isSelected: false) else { return }
+                mutAttrString.setAttributes(attributes, range: element.range)
             }
         }
     }
@@ -465,6 +466,14 @@ typealias ElementTuple = (range: NSRange, element: ActiveElement, type: ActiveTy
             return
         }
         elementHandler(element)
+    }
+
+    fileprivate func didTapRange(_ id: String, for type: ActiveType) {
+        guard let rangeTapHandler = rangeTapHandler else {
+            delegate?.didSelect(id, type: type)
+            return
+        }
+        rangeTapHandler(id)
     }
 }
 
