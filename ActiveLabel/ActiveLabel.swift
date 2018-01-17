@@ -30,14 +30,6 @@ import UIKit
         didSet { updateTextStorage() }
     }
 
-    @IBInspectable public var lineSpacing: CGFloat = 0 {
-        didSet { updateTextStorage() }
-    }
-
-    @IBInspectable public var minimumLineHeight: CGFloat = 0 {
-        didSet { updateTextStorage() }
-    }
-    
     override open var font: UIFont! {
         didSet { updateTextStorage() }
     }
@@ -129,10 +121,11 @@ import UIKit
             return
         }
 
-        let mutAttrString = addLineBreak(attributedText)
-        textStorage.setAttributedString(mutAttrString)
+        let finalAttributedText = addDefaultAttributes(attributedText)
+        textStorage.setAttributedString(finalAttributedText)
+
         customizing = true
-        self.attributedText = mutAttrString
+        self.attributedText = finalAttributedText
         customizing = false
         setNeedsDisplay()
     }
@@ -144,22 +137,23 @@ import UIKit
         return CGPoint(x: rect.origin.x, y: glyphOriginY)
     }
 
-    /// add line break mode
-    private func addLineBreak(_ attrString: NSAttributedString) -> NSMutableAttributedString {
-        let mutAttrString = NSMutableAttributedString(attributedString: attrString)
-
-        var range = NSRange(location: 0, length: 0)
-        var attributes = mutAttrString.attributes(at: 0, effectiveRange: &range)
-        
-        let paragraphStyle = attributes[NSAttributedStringKey.paragraphStyle] as? NSMutableParagraphStyle ?? NSMutableParagraphStyle()
-        paragraphStyle.lineBreakMode = NSLineBreakMode.byWordWrapping
+    private func addDefaultAttributes(_ attributedString: NSAttributedString) -> NSMutableAttributedString {
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineBreakMode = lineBreakMode
         paragraphStyle.alignment = textAlignment
-        paragraphStyle.lineSpacing = lineSpacing
-        paragraphStyle.minimumLineHeight = minimumLineHeight > 0 ? minimumLineHeight: self.font.pointSize * 1.14
-        attributes[NSAttributedStringKey.paragraphStyle] = paragraphStyle
-        mutAttrString.setAttributes(attributes, range: range)
 
-        return mutAttrString
+        let attributes: [NSAttributedStringKey: Any] = [
+            .paragraphStyle: paragraphStyle,
+            .font: font,
+            .foregroundColor: textColor
+        ]
+
+        let mutableAttributedString = NSMutableAttributedString(string: attributedString.string, attributes: attributes)
+        attributedString.enumerateAttributes(in: NSRange(location: 0, length: attributedString.length), options: []) { (attributes, range, _) in
+            mutableAttributedString.addAttributes(attributes, range: range)
+        }
+
+        return mutableAttributedString
     }
 
     private func element(at location: CGPoint) -> String? {

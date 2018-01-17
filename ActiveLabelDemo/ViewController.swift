@@ -20,13 +20,13 @@ class ViewController: UIViewController {
 
         label.customize {
             label.textColor = UIColor.lightGray
-            label.font = UIFont.systemFont(ofSize: 15)
+            label.font = UIFont.systemFont(ofSize: 18)
             let attributedText = NSMutableAttributedString(string: "This is a post with #multiple #hashtags and a @userhandle.\n Links are also supported like\nvefver vergv erg ergver gver vgerv")
             attributedText.addAttributes([.foregroundColor: UIColor.orange], range: NSRange(location: 5, length: 4))
             attributedText.addAttributes([.foregroundColor: UIColor.blue], range: NSRange(location: 15, length: 4))
+            label.textAlignment = .center
             label.attributedText = attributedText
             label.numberOfLines = 0
-            label.lineSpacing = 4
         }
 
         label.tapHandler = { (key) in
