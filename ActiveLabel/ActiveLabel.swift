@@ -86,21 +86,6 @@ import UIKit
         updateTextStorage()
     }
 
-    // MARK: - Auto layout
-
-    open override var intrinsicContentSize: CGSize {
-        let superSize = super.intrinsicContentSize
-        textContainer.size = CGSize(width: superSize.width, height: CGFloat.greatestFiniteMagnitude)
-        let size = layoutManager.usedRect(for: textContainer)
-        let candidate = CGSize(width: ceil(size.width), height: ceil(size.height))
-
-        guard candidate.width > 0 && candidate.height > 0 else {
-            return .zero
-        }
-
-        return candidate
-    }
-
     // MARK: - Helpers
 
     private func setupLabel() {
