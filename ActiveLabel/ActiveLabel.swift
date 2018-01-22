@@ -124,7 +124,6 @@ import UIKit
 
     private func addDefaultAttributes(_ attributedString: NSAttributedString) -> NSMutableAttributedString {
         let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineBreakMode = lineBreakMode
         paragraphStyle.alignment = textAlignment
 
         let attributes: [NSAttributedStringKey: Any] = [
