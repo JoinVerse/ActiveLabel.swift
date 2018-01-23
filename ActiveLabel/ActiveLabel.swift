@@ -19,7 +19,9 @@ import UIKit
     public var tapHandler: ((String) -> Void)?
 
     override open var text: String? {
-        didSet { updateTextStorage() }
+        didSet {
+            attributedText = text.map(NSAttributedString.init(string:))
+        }
     }
 
     override open var attributedText: NSAttributedString? {
