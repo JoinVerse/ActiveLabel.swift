@@ -168,10 +168,12 @@ import UIKit
     open override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
         let location = touch.location(in: self)
-        element(at: location).map {
-            tapHandler?($0)
+        if let element = element(at: location) {
+            tapHandler?(element)
+            super.touchesCancelled(touches, with: event)
+        } else {
+            super.touchesEnded(touches, with: event)
         }
-        super.touchesEnded(touches, with: event)
     }
 }
 
