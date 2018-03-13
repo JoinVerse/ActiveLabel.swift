@@ -19,6 +19,7 @@ class ViewController: UIViewController {
         label.activeElements["dafuck"] = NSRange(location: 15, length: 4)
 
         label.customize {
+            label.highlightedTextColor = UIColor.purple
             label.textColor = UIColor.lightGray
             label.font = UIFont.systemFont(ofSize: 18)
             let attributedText = NSMutableAttributedString(string: "This is a post with #multiple #hashtags and a @userhandle.\n Links are also supported like\nvefver vergv erg ergver gver vgerv")
@@ -37,6 +38,7 @@ class ViewController: UIViewController {
         label.translatesAutoresizingMaskIntoConstraints = false
         view.addConstraint(NSLayoutConstraint(item: label, attribute: .top, relatedBy: .equal, toItem: view, attribute: .top, multiplier: 1, constant: 50))
         view.addConstraint(NSLayoutConstraint(item: label, attribute: .leading, relatedBy: .equal, toItem: view, attribute: .leading, multiplier: 1, constant: 30))
+        view.addConstraint(NSLayoutConstraint(item: label, attribute: .trailing, relatedBy: .equal, toItem: view, attribute: .trailing, multiplier: 1, constant: -30))
 
         // Do any additional setup after loading the view, typically from a nib.
     }

@@ -18,6 +18,13 @@ import UIKit
     let textStorage = NSTextStorage()
     public var tapHandler: ((String) -> Void)?
 
+    public var highlightedRange: NSRange? {
+        didSet {
+            guard highlightedRange != oldValue else { return }
+            setNeedsDisplay()
+        }
+    }
+
     override open var text: String? {
         didSet {
             attributedText = text.map(NSAttributedString.init(string:))
@@ -70,13 +77,25 @@ import UIKit
     }
 
     override open func drawText(in rect: CGRect) {
-        let range = NSRange(location: 0, length: textStorage.length)
+        drawHighlightIfNeeded(in: rect)
 
+        let range = NSRange(location: 0, length: textStorage.length)
         textContainer.size = rect.size
         let newOrigin = textOrigin(inRect: rect)
 
         layoutManager.drawBackground(forGlyphRange: range, at: newOrigin)
         layoutManager.drawGlyphs(forGlyphRange: range, at: newOrigin)
+    }
+
+    private func drawHighlightIfNeeded(in rect: CGRect) {
+        guard let highlightedRange = highlightedRange, let highlightedTextColor = highlightedTextColor else { return }
+
+        highlightedTextColor.setFill()
+
+        layoutManager.enumerateEnclosingRects(forGlyphRange: highlightedRange, withinSelectedGlyphRange: highlightedRange, in: textContainer) { (selectionRect, _) in
+            let path = UIBezierPath(roundedRect: selectionRect.insetBy(dx: -1, dy: 0).intersection(rect), cornerRadius: 2)
+            path.fill()
+        }
     }
 
     // MARK: - Customzation
@@ -142,7 +161,7 @@ import UIKit
         return mutableAttributedString
     }
 
-    private func element(at location: CGPoint) -> String? {
+    private func element(at location: CGPoint) -> (key: String, range: NSRange)? {
         guard textStorage.length > 0 else {
             return nil
         }
@@ -158,7 +177,7 @@ import UIKit
         
         for (key, range) in activeElements {
             if index >= range.location && index <= range.location + range.length {
-                return key
+                return (key: key, range: range)
             }
         }
 
@@ -166,14 +185,25 @@ import UIKit
     }
 
     open override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        highlightedRange = nil
         guard let touch = touches.first else { return }
         let location = touch.location(in: self)
         if let element = element(at: location) {
-            tapHandler?(element)
+            tapHandler?(element.key)
             super.touchesCancelled(touches, with: event)
         } else {
             super.touchesEnded(touches, with: event)
         }
+    }
+
+    open override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let touch = touches.first else { return }
+        let location = touch.location(in: self)
+        if let element = element(at: location) {
+            highlightedRange = element.range
+        }
+
+        super.touchesBegan(touches, with: event)
     }
 }
 
