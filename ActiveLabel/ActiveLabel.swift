@@ -153,7 +153,7 @@ import UIKit
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = textAlignment
 
-        let attributes: [NSAttributedStringKey: Any] = [
+        let attributes: [NSAttributedString.Key: Any] = [
             .paragraphStyle: paragraphStyle,
             .font: font,
             .foregroundColor: textColor

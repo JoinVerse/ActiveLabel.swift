@@ -49,7 +49,7 @@ class ViewController: UIViewController {
     }
     
     func alert(_ title: String, message: String) {
-        let vc = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
+        let vc = UIAlertController(title: title, message: message, preferredStyle: UIAlertController.Style.alert)
         vc.addAction(UIAlertAction(title: "Ok", style: .cancel, handler: nil))
         present(vc, animated: true, completion: nil)
     }
